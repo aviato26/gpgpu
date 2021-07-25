@@ -54,7 +54,7 @@ export default class Main
       refx = (i % this.size) / this.size;
       refy = ~~(i / this.size) / this.size;
 
-      positions.set([x, y, x], i * 3);
+      positions.set([x, y, z], i * 3);
       reference.set([refx, refy], i * 2);
     }
 
