@@ -19,9 +19,9 @@ export default class Main
   document.body.appendChild( this.renderer.domElement );
 
   //this.geometry = new THREE.BoxBufferGeometry(this.size, this.size, this.size, 50, 50, 50);
-  this.initGPGPU()
   this.addingObjects();
-    this.material.uniforms.positionTexture.value = this.gpgpu.getCurrentRenderTarget(this.positionVariable).texture;
+  this.initGPGPU()
+
   this.camera.position.z = 5;
 
   // must bind function to this class or the default is the global scope which will return animate is undefined since there is no animate function in global scope
@@ -34,7 +34,7 @@ export default class Main
   {
 
     this.geometry = new THREE.BufferGeometry();
-    this.geometry1 = new THREE.BoxBufferGeometry(1, 1, 1, 10, 10, 10);
+    //this.geometry1 = new THREE.BoxBufferGeometry(1, 1, 1, 10, 10, 10);
     let positions = new Float32Array(this.size * this.size * 3);
     let reference = new Float32Array(this.size * this.size * 2);
 
@@ -63,11 +63,6 @@ export default class Main
 
     this.material = new THREE.ShaderMaterial(
       {
-        extenstions:
-        {
-          derivatives: "#extenstion GL_OES_standard_derivatives : enable"
-        },
-
         side: THREE.DoubleSide,
 
         uniforms:
@@ -90,12 +85,14 @@ export default class Main
   {
     this.gpgpu = new GPUComputationRenderer(this.size, this.size, this.renderer);
     this.dtPosition = this.gpgpu.createTexture();
+    //this.dtPosition.image.data = this.geometry.attributes.position.array
     this.fillPositions(this.dtPosition)
 
+    //this.material.uniforms.positionTexture.value = this.dtPosition.texture
     this.positionVariable = this.gpgpu.addVariable('texturePosition', fragState.fragState, this.dtPosition);
 
-    //this.positionVariable.wrapS = THREE.RepeatWrapping;
-    //this.positionVariable.wrapT = THREE.RepeatWrapping;
+    this.positionVariable.wrapS = THREE.RepeatWrapping;
+    this.positionVariable.wrapT = THREE.RepeatWrapping;
 
     this.gpgpu.init();
   }
@@ -129,13 +126,13 @@ export default class Main
 
 
   animate(){
-    //requestAnimationFrame( this.animate );
+    requestAnimationFrame( this.animate );
 
     this.gpgpu.compute();
-    //console.log(this.material.uniforms.positionTexture.value)
+    //console.log(this.dtPosition)
     this.material.uniforms.positionTexture.value = this.gpgpu.getCurrentRenderTarget(this.positionVariable).texture;
-    //console.log(this.material.uniforms.positionTexture.value)
-    requestAnimationFrame( this.animate );
+
+    //requestAnimationFrame( this.animate );
     this.renderer.render( this.scene, this.camera);
   }
 
