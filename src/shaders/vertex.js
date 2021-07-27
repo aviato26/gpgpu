@@ -4,6 +4,7 @@ exports.vertex =
 uniform sampler2D positionTexture;
 attribute vec2 reference;
 varying vec2 vUv;
+uniform vec2 mouse;
 
 void main()
 {
