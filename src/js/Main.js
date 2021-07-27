@@ -18,11 +18,18 @@ export default class Main
   this.renderer.setSize( window.innerWidth, window.innerHeight );
   document.body.appendChild( this.renderer.domElement );
 
+  this.clock = new THREE.Clock();
+
+  this.mouse = new THREE.Vector2(),
+  this.mouse.x = 0,
+  this.mouse.y = 0,
+
   //this.geometry = new THREE.BoxBufferGeometry(this.size, this.size, this.size, 50, 50, 50);
   this.addingObjects();
-  this.initGPGPU()
+  this.initGPGPU();
+  this.mousePos();
 
-  this.camera.position.z = 5;
+  this.camera.position.z = 15;
 
   // must bind function to this class or the default is the global scope which will return animate is undefined since there is no animate function in global scope
   this.animate = this.animate.bind(this);
@@ -91,6 +98,10 @@ export default class Main
     //this.material.uniforms.positionTexture.value = this.dtPosition.texture
     this.positionVariable = this.gpgpu.addVariable('texturePosition', fragState.fragState, this.dtPosition);
 
+    this.positionUniforms = this.positionVariable.material.uniforms;
+
+    this.positionUniforms['mouse'] = { value: new THREE.Vector2(0, 0) };
+
     this.positionVariable.wrapS = THREE.RepeatWrapping;
     this.positionVariable.wrapT = THREE.RepeatWrapping;
 
@@ -124,9 +135,22 @@ export default class Main
     }
   }
 
+  mousePos()
+  {
+    document.addEventListener('mousemove', (e) =>{
+      this.mouse.x = 0.5 * e.clientX / (window.innerWidth / 2);
+      this.mouse.y = 0.5 * e.clientY / (window.innerHeight / 2);
+    })
+  }
+
 
   animate(){
     requestAnimationFrame( this.animate );
+
+    //this.material.uniforms.mouse.value.x = this.mouse.x;
+    //this.material.uniforms.mouse.value.y = this.mouse.y;
+
+    this.positionUniforms['mouse'].value.set(this.mouse.x, this.mouse.y)
 
     this.gpgpu.compute();
     //console.log(this.dtPosition)
