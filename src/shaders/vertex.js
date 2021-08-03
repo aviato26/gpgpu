@@ -2,15 +2,16 @@
 exports.vertex =
 `
 uniform sampler2D positionTexture;
+uniform sampler2D velocityTexture;
 attribute vec2 reference;
 varying vec2 vUv;
-uniform vec2 mouse;
 
 void main()
 {
     vUv = reference;
 
     vec3 pos = texture(positionTexture, reference).xyz;
+    vec3 vel = texture(velocityTexture, reference).xyz;    
 
     vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
 
