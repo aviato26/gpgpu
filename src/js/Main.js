@@ -3,7 +3,8 @@ import * as THREE from 'three';
 import { GPUComputationRenderer } from 'three/examples/jsm/misc/GPUComputationRenderer.js'
 import vertex from '../shaders/vertex.js';
 import fragment from '../shaders/fragment.js';
-import fragState from '../shaders/FragState.js';
+import posFragment from '../shaders/Position.js';
+import velFragment from '../shaders/Velocity.js';
 
 export default class Main
 {
@@ -20,16 +21,20 @@ export default class Main
 
   this.clock = new THREE.Clock();
 
-  this.mouse = new THREE.Vector2(),
+  this.mouse = new THREE.Vector3(),
   this.mouse.x = 0,
   this.mouse.y = 0,
+  this.rayFromMouse = new THREE.Vector3(),
+
+  this.raycaster = new THREE.Raycaster();
+  this.intersects = null;
 
   //this.geometry = new THREE.BoxBufferGeometry(this.size, this.size, this.size, 50, 50, 50);
   this.addingObjects();
   this.initGPGPU();
   this.mousePos();
 
-  this.camera.position.z = 15;
+  this.camera.position.z = 5;
 
   // must bind function to this class or the default is the global scope which will return animate is undefined since there is no animate function in global scope
   this.animate = this.animate.bind(this);
@@ -75,6 +80,7 @@ export default class Main
         uniforms:
         {
           positionTexture: { value: null },
+          velocityTexture: { value: null },
           res: { value: new THREE.Vector4() },
           count: { type: "f", value: 0.0}
         },
@@ -85,25 +91,44 @@ export default class Main
     )
 
     this.mesh = new THREE.Points( this.geometry, this.material );
-    this.scene.add(this.mesh)
+
+    this.geometryForRaycaster = new THREE.PlaneBufferGeometry(window.innerWidth, window.innerHeight);
+    this.materialForRaycaster = new THREE.MeshBasicMaterial(
+      {
+        visible: false
+      }
+    );
+    this.rayMesh = new THREE.Mesh(this.geometryForRaycaster, this.materialForRaycaster);
+    this.scene.add(this.mesh, this.rayMesh);
   }
 
   initGPGPU()
   {
     this.gpgpu = new GPUComputationRenderer(this.size, this.size, this.renderer);
     this.dtPosition = this.gpgpu.createTexture();
+    this.dtVelocity = this.gpgpu.createTexture();
     //this.dtPosition.image.data = this.geometry.attributes.position.array
     this.fillPositions(this.dtPosition)
+    this.fillPositions(this.dtVelocity)
 
     //this.material.uniforms.positionTexture.value = this.dtPosition.texture
-    this.positionVariable = this.gpgpu.addVariable('texturePosition', fragState.fragState, this.dtPosition);
+    this.positionVariable = this.gpgpu.addVariable('texturePosition', posFragment.posFragment, this.dtPosition);
+    this.velocityVariable = this.gpgpu.addVariable('textureVelocity', velFragment.velFragment, this.dtVelocity);
 
     this.positionUniforms = this.positionVariable.material.uniforms;
+    this.velocityUniforms = this.velocityVariable.material.uniforms;
 
-    this.positionUniforms['mouse'] = { value: new THREE.Vector2(0, 0) };
+    //this.positionUniforms['mouse'] = { value: new THREE.Vector3(0, 0, 0) };
+    this.velocityUniforms['mouse'] = { value: new THREE.Vector3(0, 0, 0) };
+
+    this.gpgpu.setVariableDependencies(this.velocityVariable, [this.positionVariable, this.velocityVariable]);
+    this.gpgpu.setVariableDependencies(this.positionVariable, [this.positionVariable, this.velocityVariable]);
 
     this.positionVariable.wrapS = THREE.RepeatWrapping;
     this.positionVariable.wrapT = THREE.RepeatWrapping;
+
+    this.velocityVariable.wrapS = THREE.RepeatWrapping;
+    this.velocityVariable.wrapT = THREE.RepeatWrapping;
 
     this.gpgpu.init();
   }
@@ -114,11 +139,7 @@ export default class Main
     let x;
     let y;
     let z;
-/*
-    this.geometry = new THREE.BufferGeometry();
-    let positions = new Float32Array(this.size * this.size * 3);
-    let reference = new Float32Array(this.size * this.size * 2);
-*/
+
     for(let i = 0; i < arr.length; i += 4)
     {
       //  setting random numbers for position
@@ -137,9 +158,10 @@ export default class Main
 
   mousePos()
   {
-    document.addEventListener('mousemove', (e) =>{
-      this.mouse.x = 0.5 * e.clientX / (window.innerWidth / 2);
-      this.mouse.y = 0.5 * e.clientY / (window.innerHeight / 2);
+    document.addEventListener('mousemove', (event) =>{
+      this.mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+      //this.mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+      this.mouse.y = (1.0 - event.clientY / window.innerHeight ) * 2 - 1;
     })
   }
 
@@ -147,14 +169,19 @@ export default class Main
   animate(){
     requestAnimationFrame( this.animate );
 
-    //this.material.uniforms.mouse.value.x = this.mouse.x;
-    //this.material.uniforms.mouse.value.y = this.mouse.y;
+    this.raycaster.setFromCamera(this.mouse, this.camera);
+    this.intersects = this.raycaster.intersectObjects(this.scene.children);
 
-    this.positionUniforms['mouse'].value.set(this.mouse.x, this.mouse.y)
+    //console.log(this.intersects[0].point)
+    this.rayFromMouse.x = this.intersects[0].point.x;
+    this.rayFromMouse.y = this.intersects[0].point.y;
+
+    this.velocityUniforms['mouse'].value.set(this.rayFromMouse.x, this.rayFromMouse.y)
 
     this.gpgpu.compute();
-    //console.log(this.dtPosition)
+
     this.material.uniforms.positionTexture.value = this.gpgpu.getCurrentRenderTarget(this.positionVariable).texture;
+    this.material.uniforms.velocityTexture.value = this.gpgpu.getCurrentRenderTarget(this.velocityVariable).texture;
 
     //requestAnimationFrame( this.animate );
     this.renderer.render( this.scene, this.camera);
