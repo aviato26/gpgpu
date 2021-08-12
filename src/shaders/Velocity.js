@@ -14,21 +14,35 @@ void main()
   vec3 pos = tmpPos.xyz;
   vec3 vel = tmpVel.xyz;
 
-  vec3 dist = mouse - pos;
-/*
-  vec3 distSqrd = dist * dist;
-  vec3 constrain = clamp(distSqrd, 0.0, 5.0);
-  float gravityConstant = 1.0;
-  float fx = gravityConstant / constrain.x;
-  float fy = gravityConstant / constrain.y;
-  float fz = gravityConstant / constrain.z;
+  vec3 dPos = mouse - pos;
+  vec3 force;
+  vec3 acc;
 
-  vel.x += fx;
-  vel.y += fy;
-  vel.z += fz;
+  float distance = length(dPos);
+  float dSqrd = sqrt(distance);
+  float gravityField = 1.0 / dSqrd;
+  gravityField = min(gravityField, 100.0);
+  acc += gravityField * normalize(dPos);
+
+
+  //vec3 distSqrd = dist * dist;
+  //vec3 constrain = clamp(distSqrd, 2.0, 3.5);
+/*
+  vec3 ds = sqrt(dist);
+  vec3 c = clamp(ds, 5.0, 10.0);
+  float gravityConstant = 1.0;
+  float fx = gravityConstant / dist.x;
 */
-  vel.xyz += normalize(dist) * 0.04;
-  vel.xyz = clamp(vel.xyz, vec3(-1.9), vec3(1.9));
+  //float fy = gravityConstant / c.y;
+  //float fz = gravityConstant / c.z;
+
+  //vel.x += fx * 0.1;
+  //vel.y += fy;
+  //vel.z += fz;
+
+  //vel.xyz += normalize(dist) * 0.4;
+  //vel.xyz = clamp(vel.xyz, vec3(-1.9), vec3(1.9));
+  vel += acc;
 
   gl_FragColor = vec4(vel, 0.1);
 }
