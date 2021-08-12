@@ -3,12 +3,12 @@
 exports.fragment =
 `
 varying vec2 vUv;
-uniform vec2 mouse;
-uniform vec2 res;
+uniform sampler2D tex;
 
 void main() {
-
-    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+  vec4 tex = texture2D(tex, vUv);
+  gl_FragColor = tex;
+  //gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
 }
 
 `
