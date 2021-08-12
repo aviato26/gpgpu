@@ -14,7 +14,7 @@ export default class Main
   this.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 
   this.scene.background = new THREE.Color( 0xffffff );
-  this.size = 128;
+  this.size = 64;
 
   this.renderer = new THREE.WebGLRenderer();
   this.renderer.setSize( window.innerWidth, window.innerHeight );
@@ -29,11 +29,12 @@ export default class Main
   this.raycaster = new THREE.Raycaster();
   this.intersects = null;
 
-  this.segments = this.size;
+  this.segments = 63;
   //this.segments = this.size / 1.76;
   //this.boxGeometry = new THREE.BoxBufferGeometry(1, 1, 1, this.segments, this.segments, this.segments);
   //this.segments = 148;
   this.boxGeometry = new THREE.PlaneGeometry(1, 1, this.segments, this.segments);
+  this.boxGeometry.rotateX(Math.PI)
 
   //this.size = parseInt(Math.sqrt(this.boxGeometry.attributes.position.array.length * 3));
 
@@ -67,7 +68,7 @@ export default class Main
           velocityTexture: { value: null },
           tex: {type: "t", value: this.textureLoader},
           res: { value: new THREE.Vector4() },
-          count: { type: "f", value: 0.0}
+          count: { type: "f", value: 0.0 }
         },
 
         vertexShader: vertex.vertex,

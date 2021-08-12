@@ -14,35 +14,23 @@ void main()
   vec3 pos = tmpPos.xyz;
   vec3 vel = tmpVel.xyz;
 
-  vec3 dPos = mouse - pos;
+  vec3 m = mouse;
+
+  m.z = 0.001;
+
+  vec3 dPos = m - pos;
   vec3 force;
   vec3 acc;
 
   float distance = length(dPos);
   float dSqrd = sqrt(distance);
   float gravityField = 1.0 / dSqrd;
-  gravityField = min(gravityField, 100.0);
+  gravityField = min(gravityField, 0.9);
   acc += gravityField * normalize(dPos);
-
-
-  //vec3 distSqrd = dist * dist;
-  //vec3 constrain = clamp(distSqrd, 2.0, 3.5);
-/*
-  vec3 ds = sqrt(dist);
-  vec3 c = clamp(ds, 5.0, 10.0);
-  float gravityConstant = 1.0;
-  float fx = gravityConstant / dist.x;
-*/
-  //float fy = gravityConstant / c.y;
-  //float fz = gravityConstant / c.z;
-
-  //vel.x += fx * 0.1;
-  //vel.y += fy;
-  //vel.z += fz;
 
   //vel.xyz += normalize(dist) * 0.4;
   //vel.xyz = clamp(vel.xyz, vec3(-1.9), vec3(1.9));
-  vel += acc;
+  //vel += acc;
 
   gl_FragColor = vec4(vel, 0.1);
 }
