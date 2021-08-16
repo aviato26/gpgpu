@@ -14,7 +14,7 @@ export default class Main
   this.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 
   this.scene.background = new THREE.Color( 0xffffff );
-  this.size = 128;
+  this.size = 40;
 
   this.renderer = new THREE.WebGLRenderer();
   this.renderer.setSize( window.innerWidth, window.innerHeight );
@@ -29,7 +29,7 @@ export default class Main
   this.raycaster = new THREE.Raycaster();
   this.intersects = null;
 
-  this.segments = this.size;
+  this.segments = this.size - 1;
   //this.segments = this.size / 1.76;
   //this.boxGeometry = new THREE.BoxBufferGeometry(1, 1, 1, this.segments, this.segments, this.segments);
   //this.segments = 148;
@@ -47,7 +47,7 @@ export default class Main
     this.mousePos();
   }
 
-  this.camera.position.z = 1;
+  this.camera.position.z = 3;
   //console.log(this.boxGeometry.attributes.position.array)
   // must bind function to this class or the default is the global scope which will return animate is undefined since there is no animate function in global scope
   this.animate = this.animate.bind(this);

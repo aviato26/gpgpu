@@ -14,7 +14,7 @@ void main()
   vec3 pos = tmpPos.xyz;
   vec3 vel = tmpVel.xyz;
 
-  //pos += vel * 0.002;
+  pos += vel * 0.1;
 
   gl_FragColor = vec4(pos, 0.1);
   //gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
