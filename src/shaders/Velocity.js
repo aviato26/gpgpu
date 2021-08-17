@@ -15,6 +15,7 @@ void main()
   vec3 vel = tmpVel.xyz;
 
   vec3 m = mouse;
+
   m.z = 0.5;
 
   float time;
