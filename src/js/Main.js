@@ -1,11 +1,12 @@
 
 import * as THREE from 'three';
 import { GPUComputationRenderer } from 'three/examples/jsm/misc/GPUComputationRenderer.js'
+import Stats from 'three/examples/jsm/libs/stats.module.js';
 import vertex from '../shaders/vertex.js';
 import fragment from '../shaders/fragment.js';
 import posFragment from '../shaders/Position.js';
 import velFragment from '../shaders/Velocity.js';
-import img from '../img.png';
+import img from '../img3.jpg';
 
 export default class Main
 {
@@ -13,12 +14,16 @@ export default class Main
   this.scene = new THREE.Scene();
   this.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 
+  this.stats = new Stats();
+
   this.scene.background = new THREE.Color( 0xffffff );
-  this.size = 40;
+  this.size = 300;
 
   this.renderer = new THREE.WebGLRenderer();
   this.renderer.setSize( window.innerWidth, window.innerHeight );
+
   document.body.appendChild( this.renderer.domElement );
+  document.body.appendChild( this.stats.dom );
 
   this.clock = new THREE.Clock();
 
@@ -31,10 +36,7 @@ export default class Main
 
   this.segments = this.size - 1;
 
-  //this.segments = this.size / 1.76;
-  //this.boxGeometry = new THREE.BoxBufferGeometry(1, 1, 1, this.segments, this.segments, this.segments);
-  //this.segments = 148;
-  this.boxGeometry = new THREE.PlaneGeometry(1, 1, this.segments, this.segments);
+  this.boxGeometry = new THREE.PlaneGeometry(0.9, 0.9, this.segments, this.segments);
   this.boxGeometry.rotateX(Math.PI)
 
   //this.size = parseInt(Math.sqrt(this.boxGeometry.attributes.position.array.length * 3));
@@ -49,7 +51,7 @@ export default class Main
     this.mousePos();
   }
 
-  this.camera.position.z = 3;
+  this.camera.position.z = 1;
   //console.log(this.boxGeometry.attributes.position.array)
   // must bind function to this class or the default is the global scope which will return animate is undefined since there is no animate function in global scope
   this.animate = this.animate.bind(this);
@@ -69,7 +71,7 @@ export default class Main
           velocityTexture: { value: null },
           tex: {type: "t", value: this.textureLoader},
           res: { value: new THREE.Vector4() },
-          count: { type: "f", value: 0.0 }
+          time: { type: "f", value: this.clock.getDelta() }
         },
 
         vertexShader: vertex.vertex,
@@ -109,6 +111,7 @@ export default class Main
     this.velocityUniforms = this.velocityVariable.material.uniforms;
 
     this.velocityUniforms['mouse'] = { value: new THREE.Vector3(0, 0, 0) };
+    this.velocityUniforms['time'] = { value: 0.0};
 
     this.gpgpu.setVariableDependencies(this.velocityVariable, [this.positionVariable, this.velocityVariable]);
     this.gpgpu.setVariableDependencies(this.positionVariable, [this.positionVariable, this.velocityVariable]);
@@ -142,41 +145,7 @@ export default class Main
       data[i + 1] = y;
       data[i + 2] = z;
       data[i + 3] = 0;
-
-      // assigning position values, the texture uses 4 numbers for every particle
-/*
-      data[i] = geometryPosition[index];
-      data[i + 1] = geometryPosition[index + 1];
-      data[i + 2] = geometryPosition[index + 2];
-      data[i + 3] = 1;
-*/
-      /*
-      data[i] = this.imgData.data[index];
-      data[i + 1] = this.imgData.data[index + 1];
-      data[i + 2] = this.imgData.data[index + 2];
-      data[i + 3] = this.imgData.data[index + 3];
-      */
     }
-
-/*
-    for(let i = 0; i < arr.length; i += 4)
-    {
-      //  setting random numbers for position
-      let rand = Math.floor(Math.random() * (this.boxGeometry.attributes.position.array.length / 3));
-
-      x = this.boxGeometry.attributes.position.array[3 * rand];
-      y = this.boxGeometry.attributes.position.array[3 * rand + 1];
-      z = this.boxGeometry.attributes.position.array[3 * rand + 2];
-
-      // assigning position values, the texture uses 4 numbers for every particle
-
-      arr[i] = x;
-      arr[i + 1] = y;
-      arr[i + 2] = z;
-      arr[i + 3] = 1;
-    }
-*/
-    //texture.image.data = this.boxGeometry.attributes.position.array
   }
 
   mousePos()
@@ -192,14 +161,18 @@ export default class Main
   animate(){
     requestAnimationFrame( this.animate );
 
+    this.stats.begin();
+/*
     this.raycaster.setFromCamera(this.mouse, this.camera);
     this.intersects = this.raycaster.intersectObjects(this.scene.children);
 
     //console.log(this.intersects[0].point)
     this.rayFromMouse.x = this.intersects[0].point.x;
     this.rayFromMouse.y = this.intersects[0].point.y;
-
-    this.velocityUniforms['mouse'].value.set(this.rayFromMouse.x, this.rayFromMouse.y)
+*/
+    //this.velocityUniforms['mouse'].value.set(this.rayFromMouse.x, this.rayFromMouse.y)
+    this.velocityUniforms['mouse'].value.set(this.mouse.x, this.mouse.y)
+    this.velocityUniforms['time'].value = this.clock.getDelta();
 
     this.gpgpu.compute();
 
@@ -208,6 +181,8 @@ export default class Main
     //this.mesh.rotation.y += 0.01;
     //this.mesh.rotation.z += 0.01;
     this.renderer.render( this.scene, this.camera);
+
+    this.stats.end();
   }
 
 }
