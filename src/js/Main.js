@@ -6,7 +6,7 @@ import vertex from '../shaders/vertex.js';
 import fragment from '../shaders/fragment.js';
 import posFragment from '../shaders/Position.js';
 import velFragment from '../shaders/Velocity.js';
-import img from '../img3.jpg';
+import img from '../coffeeStop.png';
 
 export default class Main
 {
@@ -37,7 +37,7 @@ export default class Main
   this.segments = this.size - 1;
 
   this.boxGeometry = new THREE.PlaneGeometry(0.9, 0.9, this.segments, this.segments);
-  this.boxGeometry.rotateX(Math.PI)
+  //this.boxGeometry.rotateX(Math.PI)
 
   //this.size = parseInt(Math.sqrt(this.boxGeometry.attributes.position.array.length * 3));
 
@@ -80,15 +80,7 @@ export default class Main
     )
 
     this.mesh = new THREE.Points( this.boxGeometry, this.material );
-
-    this.geometryForRaycaster = new THREE.PlaneBufferGeometry(window.innerWidth, window.innerHeight);
-    this.materialForRaycaster = new THREE.MeshBasicMaterial(
-      {
-        visible: false
-      }
-    );
-    this.rayMesh = new THREE.Mesh(this.geometryForRaycaster, this.materialForRaycaster);
-    this.scene.add(this.mesh, this.rayMesh);
+    this.scene.add(this.mesh);
   }
 
   initGPGPU()
@@ -98,8 +90,12 @@ export default class Main
     this.dtPosition = this.gpgpu.createTexture();
     this.dtVelocity = this.gpgpu.createTexture();
 
+    // this needs to be set or texture will be upside down
+    this.dtPosition.flipY = true;
+
+
     //this.dtPosition.image.data = this.geometry.attributes.position.array
-    console.log(this.dtPosition.image.data.length, this.boxGeometry.attributes.uv.array.length)
+    console.log(this.dtPosition.image.data.length, this.boxGeometry.attributes.uv.array.length);
     this.fillPositions(this.dtPosition)
     //this.fillPositions(this.dtVelocity)
 
@@ -111,7 +107,7 @@ export default class Main
     this.velocityUniforms = this.velocityVariable.material.uniforms;
 
     this.velocityUniforms['mouse'] = { value: new THREE.Vector3(0, 0, 0) };
-    this.velocityUniforms['time'] = { value: 0.0};
+    this.positionUniforms['time'] = { value: 0.0};
 
     this.gpgpu.setVariableDependencies(this.velocityVariable, [this.positionVariable, this.velocityVariable]);
     this.gpgpu.setVariableDependencies(this.positionVariable, [this.positionVariable, this.velocityVariable]);
@@ -152,7 +148,6 @@ export default class Main
   {
     document.addEventListener('mousemove', (event) =>{
       this.mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-      //this.mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
       this.mouse.y = (1.0 - event.clientY / window.innerHeight ) * 2 - 1;
     })
   }
@@ -162,24 +157,16 @@ export default class Main
     requestAnimationFrame( this.animate );
 
     this.stats.begin();
-/*
-    this.raycaster.setFromCamera(this.mouse, this.camera);
-    this.intersects = this.raycaster.intersectObjects(this.scene.children);
 
-    //console.log(this.intersects[0].point)
-    this.rayFromMouse.x = this.intersects[0].point.x;
-    this.rayFromMouse.y = this.intersects[0].point.y;
-*/
     //this.velocityUniforms['mouse'].value.set(this.rayFromMouse.x, this.rayFromMouse.y)
     this.velocityUniforms['mouse'].value.set(this.mouse.x, this.mouse.y)
-    this.velocityUniforms['time'].value = this.clock.getDelta();
+    this.positionUniforms['time'].value = this.clock.getDelta();
 
     this.gpgpu.compute();
 
     this.material.uniforms.positionTexture.value = this.gpgpu.getCurrentRenderTarget(this.positionVariable).texture;
     this.material.uniforms.velocityTexture.value = this.gpgpu.getCurrentRenderTarget(this.velocityVariable).texture;
-    //this.mesh.rotation.y += 0.01;
-    //this.mesh.rotation.z += 0.01;
+
     this.renderer.render( this.scene, this.camera);
 
     this.stats.end();
