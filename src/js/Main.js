@@ -107,7 +107,7 @@ export default class Main
     this.velocityUniforms = this.velocityVariable.material.uniforms;
 
     this.velocityUniforms['mouse'] = { value: new THREE.Vector3(0, 0, 0) };
-    this.positionUniforms['time'] = { value: 0.0};
+    this.velocityUniforms['time'] = { value: 0.0};
 
     this.gpgpu.setVariableDependencies(this.velocityVariable, [this.positionVariable, this.velocityVariable]);
     this.gpgpu.setVariableDependencies(this.positionVariable, [this.positionVariable, this.velocityVariable]);
@@ -160,7 +160,7 @@ export default class Main
 
     //this.velocityUniforms['mouse'].value.set(this.rayFromMouse.x, this.rayFromMouse.y)
     this.velocityUniforms['mouse'].value.set(this.mouse.x, this.mouse.y)
-    this.positionUniforms['time'].value = this.clock.getDelta();
+    this.velocityUniforms['time'].value = this.clock.getDelta();
 
     this.gpgpu.compute();
 

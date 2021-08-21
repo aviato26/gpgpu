@@ -3,7 +3,6 @@
 exports.posFragment =
 `
 uniform vec2 res;
-uniform float time;
 varying vec2 vUv;
 
 void main()
@@ -16,7 +15,7 @@ void main()
   vec3 pos = tmpPos.xyz;
   vec3 vel = tmpVel.xyz;
 
-  pos += vel * 0.02;
+  pos += vel * 0.018;
 
   gl_FragColor = vec4(pos, 0.1);
   //gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);

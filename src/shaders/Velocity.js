@@ -5,6 +5,7 @@ exports.velFragment =
 uniform vec2 res;
 uniform vec3 mouse;
 varying vec2 vUv;
+uniform float time;
 
 void main()
 {
@@ -27,9 +28,13 @@ void main()
   vec3 dist = sqrt(dPos);
   vec3 gravityField = 1.0 / dist;
   gravityField = min(gravityField, 0.1);
-  vel += normalize(dPos) * gravityField;
+  acc += normalize(dPos) * gravityField;
 
-  vel = clamp(vel, -1.2, 1.2);
+  acc.z *= fract(dPos.y) + cos(fract(dPos.x));
+
+  vel += acc;
+
+  vel = clamp(vel, -1.0, 1.0);
 
   gl_FragColor = vec4(vel, 0.1);
 }
