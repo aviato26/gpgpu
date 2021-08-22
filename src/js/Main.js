@@ -2,11 +2,13 @@
 import * as THREE from 'three';
 import { GPUComputationRenderer } from 'three/examples/jsm/misc/GPUComputationRenderer.js'
 import Stats from 'three/examples/jsm/libs/stats.module.js';
+import { MouseControls } from './MouseControls.js';
 import vertex from '../shaders/vertex.js';
 import fragment from '../shaders/fragment.js';
 import posFragment from '../shaders/Position.js';
 import velFragment from '../shaders/Velocity.js';
-import img from '../coffeeStop.png';
+import img from '../coffeeStop.jpg';
+import img2 from '../talkbox.jpg'
 
 export default class Main
 {
@@ -27,12 +29,7 @@ export default class Main
 
   this.clock = new THREE.Clock();
 
-  this.mouse = new THREE.Vector3();
-  this.mouse.x = 0;
-  this.mouse.y = 0;
-  this.rayFromMouse = new THREE.Vector3();
-  this.raycaster = new THREE.Raycaster();
-  this.intersects = null;
+  this.mouse = new MouseControls();
 
   this.segments = this.size - 1;
 
@@ -41,14 +38,14 @@ export default class Main
 
   //this.size = parseInt(Math.sqrt(this.boxGeometry.attributes.position.array.length * 3));
 
-  this.img = img;
-  this.textureLoader = new THREE.TextureLoader().load(this.img)
+  this.imgs = [new THREE.TextureLoader().load(img), new THREE.TextureLoader().load(img2)];
 
-  if(this.textureLoader)
+  this.texSwitch = this.mouse.tSwitch;
+
+  if(this.imgs)
   {
     this.addingObjects();
     this.initGPGPU();
-    this.mousePos();
   }
 
   this.camera.position.z = 1;
@@ -69,7 +66,13 @@ export default class Main
         {
           positionTexture: { value: null },
           velocityTexture: { value: null },
-          tex: {type: "t", value: this.textureLoader},
+          /*
+          tex: {type: "t", value: this.texture1},
+          tex2: { type: "t", value: this.texture2 },
+          */
+          tex: { type: "t", value: this.imgs[0] },
+          tex2: { type: "t", value: this.imgs[1] },
+          switchTex: { type: "f", value: this.texSwitch},
           res: { value: new THREE.Vector4() },
           time: { type: "f", value: this.clock.getDelta() }
         },
@@ -144,14 +147,6 @@ export default class Main
     }
   }
 
-  mousePos()
-  {
-    document.addEventListener('mousemove', (event) =>{
-      this.mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-      this.mouse.y = (1.0 - event.clientY / window.innerHeight ) * 2 - 1;
-    })
-  }
-
 
   animate(){
     requestAnimationFrame( this.animate );
@@ -162,10 +157,16 @@ export default class Main
     this.velocityUniforms['mouse'].value.set(this.mouse.x, this.mouse.y)
     this.velocityUniforms['time'].value = this.clock.getDelta();
 
+    // change value to pass to shader to change texture
+    this.texSwitch = this.mouse.tSwitch;
+    this.material.uniforms.switchTex.value = this.texSwitch;
+
     this.gpgpu.compute();
 
     this.material.uniforms.positionTexture.value = this.gpgpu.getCurrentRenderTarget(this.positionVariable).texture;
     this.material.uniforms.velocityTexture.value = this.gpgpu.getCurrentRenderTarget(this.velocityVariable).texture;
+
+    this.material.needsUpdate = true;
 
     this.renderer.render( this.scene, this.camera);
 
