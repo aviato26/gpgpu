@@ -4,13 +4,18 @@ exports.vertex =
 uniform sampler2D positionTexture;
 uniform sampler2D velocityTexture;
 uniform sampler2D tex;
+uniform sampler2D tex2;
+uniform float switchTex;
 uniform float time;
 attribute vec2 reference;
 varying vec2 vUv;
+varying float t;
 
 void main()
 {
     vUv = uv;
+
+    t = switchTex;
 
     vec3 pos = texture(positionTexture, vUv).xyz;
     vec3 vel = texture(velocityTexture, vUv).xyz;
