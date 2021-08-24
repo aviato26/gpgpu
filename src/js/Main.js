@@ -7,6 +7,7 @@ import vertex from '../shaders/vertex.js';
 import fragment from '../shaders/fragment.js';
 import posFragment from '../shaders/Position.js';
 import velFragment from '../shaders/Velocity.js';
+import oldPosFragment from '../shaders/OldPos.js';
 import img from '../coffeeStop.jpg';
 import img2 from '../talkbox.jpg'
 
@@ -66,6 +67,7 @@ export default class Main
         {
           positionTexture: { value: null },
           velocityTexture: { value: null },
+          oldPos: { value: null },
           /*
           tex: {type: "t", value: this.texture1},
           tex2: { type: "t", value: this.texture2 },
@@ -92,28 +94,37 @@ export default class Main
 
     this.dtPosition = this.gpgpu.createTexture();
     this.dtVelocity = this.gpgpu.createTexture();
+    this.dtOldPos = this.gpgpu.createTexture();
 
     // this needs to be set or texture will be upside down
     this.dtPosition.flipY = true;
+    this.dtOldPos.flipY = true;
 
 
     //this.dtPosition.image.data = this.geometry.attributes.position.array
     console.log(this.dtPosition.image.data.length, this.boxGeometry.attributes.uv.array.length);
-    this.fillPositions(this.dtPosition)
-    //this.fillPositions(this.dtVelocity)
+    this.fillPositions(this.dtPosition);
+    this.fillPositions(this.dtVelocity);
+    this.fillPositions(this.dtOldPos);
 
     //this.material.uniforms.positionTexture.value = this.dtPosition.texture
     this.positionVariable = this.gpgpu.addVariable('texturePosition', posFragment.posFragment, this.dtPosition);
     this.velocityVariable = this.gpgpu.addVariable('textureVelocity', velFragment.velFragment, this.dtVelocity);
+    this.oldPosVariable = this.gpgpu.addVariable('textureOldPos', oldPosFragment.oldPos, this.dtOldPos);
 
     this.positionUniforms = this.positionVariable.material.uniforms;
     this.velocityUniforms = this.velocityVariable.material.uniforms;
+    this.oldPosUniforms = this.oldPosVariable.material.uniforms;
 
+    // adding the mouse and texSwitch variable to pass off to our textures, probably could do without the time variable not sure yet
     this.velocityUniforms['mouse'] = { value: new THREE.Vector3(0, 0, 0) };
+    this.positionUniforms['texSwitch'] = { value: 0.0 };
+    this.velocityUniforms['texSwitch'] = { value: 0.0 };
     this.velocityUniforms['time'] = { value: 0.0};
 
-    this.gpgpu.setVariableDependencies(this.velocityVariable, [this.positionVariable, this.velocityVariable]);
-    this.gpgpu.setVariableDependencies(this.positionVariable, [this.positionVariable, this.velocityVariable]);
+    this.gpgpu.setVariableDependencies(this.velocityVariable, [this.positionVariable, this.velocityVariable, this.oldPosVariable]);
+    this.gpgpu.setVariableDependencies(this.positionVariable, [this.positionVariable, this.velocityVariable, this.oldPosVariable]);
+    this.gpgpu.setVariableDependencies(this.oldPosVariable, [this.positionVariable, this.oldPosVariable])
 
     this.positionVariable.wrapS = THREE.RepeatWrapping;
     this.positionVariable.wrapT = THREE.RepeatWrapping;
@@ -127,6 +138,7 @@ export default class Main
   fillPositions(texture)
   {
 
+    // this function is taking the boxGeometry positions and copying them over to the newly created datatextures for the gpgpu renderer class
     let data = texture.image.data;
     let geometryPosition = this.boxGeometry.attributes.position.array
     let x,y,z;
@@ -151,20 +163,25 @@ export default class Main
   animate(){
     requestAnimationFrame( this.animate );
 
+    // added the stats module to see how fast our simulation is running, so far it is 60fps yay!
     this.stats.begin();
-
-    //this.velocityUniforms['mouse'].value.set(this.rayFromMouse.x, this.rayFromMouse.y)
-    this.velocityUniforms['mouse'].value.set(this.mouse.x, this.mouse.y)
-    this.velocityUniforms['time'].value = this.clock.getDelta();
 
     // change value to pass to shader to change texture
     this.texSwitch = this.mouse.tSwitch;
     this.material.uniforms.switchTex.value = this.texSwitch;
 
+    //this.velocityUniforms['mouse'].value.set(this.rayFromMouse.x, this.rayFromMouse.y)
+    this.velocityUniforms['mouse'].value.set(this.mouse.x, this.mouse.y)
+    this.positionUniforms['texSwitch'] = { value: this.texSwitch };
+    this.velocityUniforms['texSwitch'] = { value: this.texSwitch };
+    this.velocityUniforms['time'].value = this.clock.getDelta();
+
     this.gpgpu.compute();
 
+    // adding the render targets to our material uniforms to kick things off
     this.material.uniforms.positionTexture.value = this.gpgpu.getCurrentRenderTarget(this.positionVariable).texture;
     this.material.uniforms.velocityTexture.value = this.gpgpu.getCurrentRenderTarget(this.velocityVariable).texture;
+    this.material.uniforms.oldPos.value = this.gpgpu.getCurrentRenderTarget(this.oldPosVariable).texture;
 
     this.material.needsUpdate = true;
 
