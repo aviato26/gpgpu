@@ -47,12 +47,18 @@ void main()
 
     /*
       after we get the reverse force from the spring equation
-      we can divide by the normalized distance and multiply by anything under 1.0
-      to get a slower pulling force, not to sure but i believe this is sometimes used for implementing
-      a verlet simulation
+      we can divide by the normalized distance and multiply by another float
+      to either speed up (anything over 1) or slow down (below 1) the partcle grouping,
+      but the image will start to lose resolution once this float goes to far in either
+      direction :)
     */
-    pos += newPos / distNormalized * 0.7;
+    pos += newPos / distNormalized; //* 1.0;
 
+    // zeroing out the z position to make the image more readable, without there is a little to much distortion
+    pos.z = 0.0;
+
+    // clamping the position between -1 and 1 to keep the particles stable, without the partcles position starts to become unstable
+    pos = clamp(pos, -1.0, 1.0);
   }
   else {
 
