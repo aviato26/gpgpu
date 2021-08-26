@@ -1,6 +1,5 @@
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-//import img from './file.png';
 const path = require('path');
 
 module.exports =
@@ -29,6 +28,15 @@ module.exports =
       {
         test: /\.(jpg|png)$/,
         loader: "file-loader"
+      },
+
+      {
+        test: /\.css$/i,
+        use: ["style-loader","css-loader"],
+        include:
+        [
+          path.resolve(__dirname, 'src')
+        ]
       }
     ]
   },
