@@ -11,6 +11,7 @@ export class MouseControls
 
     this.updateMosPos();
     this.changeTexture();
+    this.mobileMovePos();
   }
 
   updateMosPos()
@@ -34,6 +35,14 @@ export class MouseControls
       }
     })
 
+  }
+
+  mobileMovePos()
+  {
+    document.addEventListener('touchmove', (event) => {
+      this.x = ( event.changedTouches[0].clientX / window.innerWidth ) * 2 - 1;
+      this.y = (1.0 - event.changedTouches[0].clientY / window.innerHeight ) * 2 - 1;
+    })
   }
 
 }
