@@ -50,8 +50,6 @@ export default class Main
   }
 
   this.camera.position.z = 1;
-  //console.log(this.boxGeometry.attributes.position.array)
-  // must bind function to this class or the default is the global scope which will return animate is undefined since there is no animate function in global scope
   this.animate = this.animate.bind(this);
 
   this.animate();
