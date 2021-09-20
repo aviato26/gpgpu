@@ -19,6 +19,7 @@ export class MouseControls
     document.addEventListener('mousemove', (event) => {
       this.x = ( event.clientX / window.innerWidth ) * 2 - 1;
       this.y = (1.0 - event.clientY / window.innerHeight ) * 2 - 1;
+      this.y = -this.y;
     })
   }
 
@@ -42,6 +43,7 @@ export class MouseControls
     document.addEventListener('touchmove', (event) => {
       this.x = ( event.changedTouches[0].clientX / window.innerWidth ) * 2 - 1;
       this.y = (1.0 - event.changedTouches[0].clientY / window.innerHeight ) * 2 - 1;
+      this.y = -this.y;
     })
   }
 

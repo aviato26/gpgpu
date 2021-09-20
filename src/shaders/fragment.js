@@ -23,8 +23,9 @@ void main() {
       //finalTex = tex1;
     }
 
-  gl_FragColor = finalTex;
-  //gl_FragColor = vec4(col, 1.0);
+  //gl_FragColor = finalTex;
+  // not using uvs while figuring out vertice positions
+  gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
 }
 
 `

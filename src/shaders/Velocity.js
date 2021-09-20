@@ -21,7 +21,7 @@ void main()
 
   vec3 m = mouse;
 
-  m.z = 0.1;
+  //m.z = 0.1;
 
   if(flip == 1.0)
   {
@@ -49,6 +49,8 @@ void main()
   vel += acc;
 
   vel = clamp(vel, -1.0, 1.0);
+
+  //vel = vec3(0.0);
 
   gl_FragColor = vec4(vel, 0.1);
 }
