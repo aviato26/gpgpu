@@ -6,8 +6,9 @@ import * as THREE from 'three';
 //import typefaceFont
 //import typefaceFont from 'three/examples/fonts/helvetiker_regular.typeface.json'
 import typefaceFont from 'three/examples/fonts/droid/droid_sans_bold.typeface.json'
-import text from '../HomePage.glb';
+//import text from '../HomePage.glb';
 //import text from '../about4.glb';
+import text from '../ContactPage.glb';
 //const format = require('three/examples/fonts/helvetiker_regular.typeface.json');
 //import '/three/examples/fonts/helvetiker_regular.typeface.json';
 
