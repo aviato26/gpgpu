@@ -5,7 +5,7 @@ exports.velFragment =
 uniform vec2 res;
 uniform vec3 mouse;
 uniform float t;
-uniform float texSwitch;
+uniform bool applyVelocity;
 uniform float time;
 
 void main()
@@ -14,20 +14,22 @@ void main()
 
   vec4 tmpPos = texture2D(texturePosition, uv);
   vec4 tmpVel = texture2D(textureVelocity, uv);
-  float flip = texSwitch;
+
+  //float flip = texSwitch;
 
   vec3 pos = tmpPos.xyz;
   vec3 vel = tmpVel.xyz;
 
   vec3 m = mouse;
 
-  //m.z = 0.1;
+  m.z = 0.15;
 
-  if(flip == 1.0)
+/*
+  if(applyVelocity == false)
   {
     m = vec3(0.0);
   }
-
+*/
   //m = vec3(0.0, 0.0, 0.1);
 
   vec3 dPos = m - pos;
@@ -36,22 +38,27 @@ void main()
 
   vec3 dist = sqrt(dPos);
   vec3 gravityField = 1.0 / dist;
-  gravityField = min(gravityField, 0.1);
+
+  //gravityField = min(gravityField, 0.1);
+
+  gravityField = mix(gravityField, vec3(0.1), vec3(0.999));
   acc += normalize(dPos) * gravityField;
 
-  acc.z *= fract(dPos.y) + cos(dPos.x);
+  acc.xy *= fract(dPos.y) + cos(dPos.x);
 
-  if(flip == 1.0)
+  if(applyVelocity == false)
   {
     acc = vec3(0.0);
   }
 
-  vel += acc;
+  // adding acceleration with a little extra push by mulpliying by 1.1
+  vel += acc * 1.2;
 
-  vel = clamp(vel, -1.0, 1.0);
+  // the bigger the range, the bigger the particles travel radius will be
+  vel = clamp(vel, -1.5, 1.5);
 
   //vel = vec3(0.0);
 
-  gl_FragColor = vec4(vel, 0.1);
+  gl_FragColor = vec4(vel, 0.0);
 }
 `

@@ -3,7 +3,8 @@
 exports.posFragment =
 `
 uniform vec2 res;
-uniform float texSwitch;
+uniform bool applyVelocity;
+uniform float time;
 
 void main()
 {
@@ -12,6 +13,7 @@ void main()
   vec4 tmpPos = texture2D(texturePosition, uv);
   vec4 tmpVel = texture2D(textureVelocity, uv);
   vec4 oldPosTex = texture2D(textureOldPos, uv);
+
 
   vec3 pos = tmpPos.xyz;
   vec3 vel = tmpVel.xyz;
@@ -22,9 +24,9 @@ void main()
   // just adding some float to be multipled by the velocity to keep the position from growing to big and out of control
   float distortion = 0.018;
 
-  float t = texSwitch;
+  //float t = texSwitch;
 
-  if(t == 1.0)
+  if(applyVelocity == false)
   {
     vec3 dist = pos - oldPos;
     vec3 gravity = 1.0 / dist;
@@ -42,7 +44,7 @@ void main()
     pos += newPos / distSqrd * 0.99;
     */
 
-    // i think this is the equation for emulating springs
+    // applying negative force to the distance
     vec3 newPos = -0.01 * distSqrd;
 
     /*
@@ -52,13 +54,18 @@ void main()
       but the image will start to lose resolution once this float goes to far in either
       direction :)
     */
-    pos += newPos / distNormalized; //* 1.0;
+
+    // also dividing the newPos by distNormalized will bring a more spaced particle effect, will multiplying will keep entire img intact
+    //pos += newPos / distNormalized;
+    pos += newPos * distNormalized * 3.0;
+
+    // clamping the position between -1 and 1 to keep the particles stable, without the partcles position starts to become unstable
+    // this also is the area of the returning particle gravityField
+    pos = clamp(pos, -1.0, 1.0);
 
     // zeroing out the z position to make the image more readable, without there is a little to much distortion
     pos.z = 0.0;
 
-    // clamping the position between -1 and 1 to keep the particles stable, without the partcles position starts to become unstable
-    pos = clamp(pos, -1.0, 1.0);
   }
   else {
 
@@ -67,7 +74,7 @@ void main()
 
   }
 
-  gl_FragColor = vec4(pos, 0.1);
-  //gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+  gl_FragColor = vec4(pos, 0.0);
+  //gl_FragColor = vec4(uv, 0.0, 1.0);
 }
 `
