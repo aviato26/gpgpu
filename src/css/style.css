@@ -1,5 +1,205 @@
 
-body
+body, html
 {
   margin: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* setting for default container */
+.textContainers
+{
+  background-color: red;
+  width: 30%;
+  height: 15%;
+  margin: auto;
+  top: 50%;
+  left: 50%;
+  position: fixed;
+  z-index: 30000;
+  transform: translate(-50%, -50%);
+  opacity: 0.0;
+}
+
+.textContainers:hover
+{
+  cursor: pointer;
+}
+
+a
+{
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* this is the default layout for normal laptop size */
+#HomePageTop
+{
+  top: 34%;
+  width: 30%;
+  height: 5%;
+}
+
+#ProjectPageTop
+{
+  top: 36%;
+  width: 30%;
+  height: 5%;
+}
+
+#HomePageMiddle, #ContactPage
+{
+  width: 20%;
+  height: 5%;
+}
+
+#ProjectPageMiddle
+{
+  width: 25%;
+  height: 5%;
+}
+
+#HomePageBottom
+{
+  top: 65%;
+  width: 30%;
+  height: 5%;
+}
+
+#ProjectPageBottom
+{
+  top: 62%;
+  width: 30%;
+  height: 5%;
+}
+
+/* layout for mobile devices */
+@media screen and (max-width: 600px)
+{
+
+  #HomePageTop
+  {
+    top: 37%;
+    width: 50%;
+    height: 6%;
+  }
+
+  #ProjectPageTop
+ {
+   top: 40%;
+   width: 50%;
+   height: 4%;
+ }
+
+  #HomePageMiddle, #ProjectPageMiddle, #ContactPage
+  {
+    width: 30%;
+    height: 4%;
+  }
+
+  #HomePageBottom
+  {
+    top: 61%;
+    width: 50%;
+    height: 4%;
+  }
+
+  #ProjectPageBottom
+ {
+   top: 59%;
+   width: 50%;
+   height: 4%;
+ }
+
+}
+
+/* layout for tablet devices */
+@media screen and (min-width: 601px) and (max-width: 900px)
+{
+  #HomePageTop
+  {
+    top: 33%;
+    width: 30%;
+    height: 6%;
+  }
+
+  #ProjectPageTop
+  {
+    top: 36%;
+    width: 30%;
+    height: 6%;
+  }
+
+  #HomePageMiddle
+  {
+    width: 30%;
+    height: 6%;
+  }
+
+  #ProjectPageMiddle
+  {
+    width: 30%;
+    height: 5%;
+  }
+
+  #HomePageBottom
+  {
+    top: 65%;
+    width: 30%;
+    height: 6%;
+  }
+
+  #ProjectPageBottom
+  {
+    top: 63%;
+    width: 30%;
+    height: 4%;
+  }
+
+}
+
+/* query for large laptops and 4k monitors */
+@media only screen and (min-width: 1200px)
+{
+  #HomePageTop
+  {
+    top: 26%;
+    width: 32%;
+    height: 10%;
+  }
+
+  #ProjectPageTop
+  {
+    top: 30%;
+    width: 30%;
+    height: 7%;
+  }
+
+  #HomePageMiddle, #ContactPage
+  {
+    width: 25%;
+    height: 10%;
+  }
+
+  #ProjectPageMiddle
+  {
+    width: 30%;
+    height: 6%;
+  }
+
+  #HomePageBottom
+  {
+    top: 71%;
+    width: 32%;
+    height: 10%;
+  }
+
+  #ProjectPageBottom
+  {
+    top: 68%;
+    width: 30%;
+    height: 5%;
+  }
+
 }

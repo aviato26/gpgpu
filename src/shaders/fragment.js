@@ -3,29 +3,52 @@
 exports.fragment =
 `
 varying vec2 vUv;
-uniform sampler2D tex;
-uniform sampler2D tex2;
+uniform sampler2D homePage;
+uniform sampler2D projectPage;
+uniform sampler2D aboutPage;
+uniform sampler2D contactPage;
 uniform float switchTex;
+uniform vec3 meta[10];
+uniform float time;
+uniform vec2 res;
+
 
 void main() {
 
-  vec4 tex1 = texture2D(tex, vUv);
-  vec4 tex2 = texture2D(tex2, vUv);
-  vec4 finalTex = tex1;
+  vec2 uv = vUv;
+
+  vec4 homePage = texture2D(homePage, uv);
+  vec4 projectPage = texture2D(projectPage, uv);
+  vec4 aboutPage = texture2D(aboutPage, uv);
+  vec4 contactPage = texture2D(contactPage, uv);
+  vec4 currentTex = homePage;
   float t = switchTex;
 
-  if(t == 1.0)
+
+  if(t == 0.0)
     {
-      //finalTex = tex2;
-    }
-  else
-    {
-      //finalTex = tex1;
+      currentTex = homePage;
     }
 
-  //gl_FragColor = finalTex;
-  // not using uvs while figuring out vertice positions
-  gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+  else if(t == 1.0)
+    {
+      currentTex = projectPage;
+    }
+
+  else if(t == 2.0)
+    {
+      currentTex = aboutPage;
+    }
+
+    else if(t == 3.0)
+      {
+        currentTex = contactPage;
+      }
+
+    float alphaBending = clamp(abs(sin(time)), 0.05, 0.06);
+
+    gl_FragColor = vec4(currentTex.xyz, 1.0);
+
 }
 
 `
