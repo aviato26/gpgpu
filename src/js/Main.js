@@ -44,14 +44,14 @@ export default class Main
   this.cameraAspect = window.innerWidth / window.innerHeight;
   this.planeAspectRatio = 16 / 9;
 
-  this.camera = new THREE.PerspectiveCamera( this.fov, this.cameraAspect, 0.1, 2000 );
+  this.camera = new THREE.PerspectiveCamera( this.fov, this.cameraAspect, 0.1, 1000 );
 
   this.stats = new Stats();
 
   // particle size in the vertex shader, checking for mobile device and setting particle size accordingly
-  this.particleSize = (this.cameraAspect < 1.0) ? 2.0 : 3.0;
+  this.particleSize = (this.cameraAspect < 1.0) ? 3.0 : 4.0;
 
-  this.scene.background = new THREE.Color( 0x999999 );
+  //this.scene.background = new THREE.Color( 0x999999 );
   //this.scene.background = new THREE.Color( 0x000000 );
 
   // size for gpgpu renderer
@@ -64,7 +64,7 @@ export default class Main
   // 670 covers about 1.3 million particles
 
   // checking to see if the device is mobile or not to set renderer size (mobile cannot handle much more than 300 hundred unless optomized further)
-  this.size = (this.cameraAspect < 1.0) ? 300 : 300;
+  this.size = (this.cameraAspect < 1.0) ? 200 : 300;
 
   // setting pixelRatio according window size
   this.pixelRatio = (this.cameraAspect < 1.0) ? 2.0 : 1.6;

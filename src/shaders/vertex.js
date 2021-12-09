@@ -25,7 +25,6 @@ void main()
     //gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
     gl_Position = projectionMatrix * mvPosition;
 
-    //gl_PointSize = particleSize;
-    gl_PointSize = 4.0;    
+    gl_PointSize = particleSize;
 }
 `
