@@ -39,27 +39,25 @@ export default class Main
   constructor(){
   this.scene = new THREE.Scene();
 
-  this.norm = 0.0;
-
   //this.fov = 75;
   this.fov = 45;
   this.cameraAspect = window.innerWidth / window.innerHeight;
   this.planeAspectRatio = 16 / 9;
 
-  this.camera = new THREE.PerspectiveCamera( this.fov, this.cameraAspect, 0.1, 1000 );
+  this.camera = new THREE.PerspectiveCamera( this.fov, this.cameraAspect, 0.1, 2000 );
 
   this.stats = new Stats();
 
   // particle size in the vertex shader, checking for mobile device and setting particle size accordingly
-  this.particleSize = (this.cameraAspect < 1.0) ? 2.0 : 4.0;
+  this.particleSize = (this.cameraAspect < 1.0) ? 2.0 : 3.0;
 
-  //this.scene.background = new THREE.Color( 0x999999 );
+  this.scene.background = new THREE.Color( 0x999999 );
   //this.scene.background = new THREE.Color( 0x000000 );
 
   // size for gpgpu renderer
   // size for imgs
   //this.size = 320;
-  //this.size = 270;
+  //this.size = 200;
 
   // current size since we needed to reduce the amount of particles to keep 60fps on mobile
   //this.size = 400;
@@ -91,8 +89,8 @@ export default class Main
   //this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
 
 
-  this.scene2 = new THREE.Scene();
-  this.renderer2 = new THREE.WebGLRenderTarget(window.innerWidth, window.innerWidth);
+  //this.scene2 = new THREE.Scene();
+  //this.renderer2 = new THREE.WebGLRenderTarget(window.innerWidth, window.innerWidth);
 
   //console.log(this.ctx.getImageData(0, 0, window.innerWidth, window.innerHeight))
   //this.renderer.setSize( this.size, this.size );
@@ -121,8 +119,6 @@ export default class Main
   this.text = new CreateText();
 
   this.renderer.sortObjects = false;
-
-  console.log(this.mouse)
 
 // container used to listen for click events to change textures
   //this.container = new TextContainer();
@@ -198,15 +194,6 @@ export default class Main
         y: Math.random() * (window.innerHeight - 2 * radius) + radius,
         r: radius
        }
-    }
-
-    for(let i = 0; i < 10; i++)
-    {
-      var baseIndex = 3 * i;
-      var mb = meta[i];
-      dataToSendToGPU[baseIndex + 0] = mb.x;
-      dataToSendToGPU[baseIndex + 1] = mb.y;
-      dataToSendToGPU[baseIndex + 2] = mb.r;
     }
 
     //const backgroundGeometry = this.boxGeometry.attributes.position.array;
@@ -457,17 +444,6 @@ export default class Main
       //this.material.uniforms.oldPos.value = this.gpgpu.getCurrentRenderTarget(this.oldPosVariable).texture;
       //this.material.uniforms.positionTexture.value = this.gpgpu.getCurrentRenderTarget(this.positionVariable).texture;
     }
-
-      /*
-    if(this.mouse.pressingDown)
-    {
-      this.material.blending = THREE.AdditiveBlending
-    }
-    else
-    {
-      this.material.blending = THREE.NoBlending
-    }
-*/
 
     this.material.needsUpdate = true;
 
