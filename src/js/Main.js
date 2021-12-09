@@ -66,7 +66,7 @@ export default class Main
   // checking to see if the device is mobile or not to set renderer size (mobile cannot handle much more than 300 hundred unless optomized further)
   this.size = (this.cameraAspect < 1.0) ? 200 : 300;
 
-  // setting pixelRatio according window size
+  // setting pixelRatio according window size, 2.0 for mobile and 1.6 for laptop and higher
   this.pixelRatio = (this.cameraAspect < 1.0) ? 2.0 : 1.6;
   //this.size = 120;
 
