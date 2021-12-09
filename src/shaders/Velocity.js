@@ -41,7 +41,9 @@ void main()
 
   //gravityField = min(gravityField, 0.1);
 
-  gravityField = mix(gravityField, vec3(0.1), vec3(0.999));
+  // when using the mix function value cannot go over or under for particles will not show up on some devices
+  gravityField = mix(gravityField, vec3(0.1), vec3(1.0));
+
   acc += normalize(dPos) * gravityField;
 
   acc.xy *= fract(dPos.y) + cos(dPos.x);
@@ -59,6 +61,6 @@ void main()
 
   //vel = vec3(0.0);
 
-  gl_FragColor = vec4(vel, 0.0);
+  gl_FragColor = vec4(vel, 1.0);
 }
 `

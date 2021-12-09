@@ -18,17 +18,14 @@ void main()
 {
     vUv = uv;
 
-    //float t = switchTex;
-    //float pSize = particleSize;
-
     vec3 pos = texture(positionTexture, vUv).xyz;
-    //vec3 vel = texture(velocityTexture, vUv).xyz;
 
     vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
 
     //gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
     gl_Position = projectionMatrix * mvPosition;
 
-    gl_PointSize = particleSize;
+    //gl_PointSize = particleSize;
+    gl_PointSize = 4.0;    
 }
 `

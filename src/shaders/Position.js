@@ -26,27 +26,26 @@ void main()
 
   //float t = texSwitch;
 
+
   if(applyVelocity == false)
   {
+
+    // getting distance from updated particle position to original particle posistions
     vec3 dist = pos - oldPos;
-    vec3 gravity = 1.0 / dist;
 
-    //pos += normalize(dist) * gravity;
-    //pos += oldPos * 0.1;
+    // apply the negative distance force with a little damping force to make particles returning to original position a little slower
+    float damping = 0.05;
+    pos -= damping * dist;
 
+    //vec3 gravity = 1.0 / dist;
+
+/*
     vec3 distSqrd = sqrt(dist);
     vec3 distNormalized = normalize(dist);
 
-    //pos = dist * 0.5;
-
-    /*
-    vec3 newPos = -0.001 * distNormalized;
-    pos += newPos / distSqrd * 0.99;
-    */
-
     // applying negative force to the distance
     vec3 newPos = -0.01 * distSqrd;
-
+*/
     /*
       after we get the reverse force from the spring equation
       we can divide by the normalized distance and multiply by another float
@@ -57,24 +56,22 @@ void main()
 
     // also dividing the newPos by distNormalized will bring a more spaced particle effect, will multiplying will keep entire img intact
     //pos += newPos / distNormalized;
-    pos += newPos * distNormalized * 3.0;
+    //pos += newPos * distNormalized * 3.0;
 
     // clamping the position between -1 and 1 to keep the particles stable, without the partcles position starts to become unstable
     // this also is the area of the returning particle gravityField
-    pos = clamp(pos, -1.0, 1.0);
+    //pos = clamp(pos, -1.0, 1.0);
 
     // zeroing out the z position to make the image more readable, without there is a little to much distortion
-    pos.z = 0.0;
+    //pos.z = 0.0;
 
   }
   else {
-
     // if texture is not changed we are leaving the velocity based on the distance from the particles and mouse position
     pos += vel * distortion;
-
   }
 
-  gl_FragColor = vec4(pos, 0.0);
-  //gl_FragColor = vec4(uv, 0.0, 1.0);
+
+  gl_FragColor = vec4(pos, 1.0);
 }
 `

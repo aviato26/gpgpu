@@ -8,7 +8,6 @@ uniform sampler2D projectPage;
 uniform sampler2D aboutPage;
 uniform sampler2D contactPage;
 uniform float switchTex;
-uniform vec3 meta[10];
 uniform float time;
 uniform vec2 res;
 
@@ -40,12 +39,10 @@ void main() {
       currentTex = aboutPage;
     }
 
-    else if(t == 3.0)
-      {
-        currentTex = contactPage;
-      }
-
-    float alphaBending = clamp(abs(sin(time)), 0.05, 0.06);
+  else if(t == 3.0)
+    {
+      currentTex = contactPage;
+    }
 
     gl_FragColor = vec4(currentTex.xyz, 1.0);
 
