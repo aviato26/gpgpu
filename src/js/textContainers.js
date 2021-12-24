@@ -8,6 +8,19 @@ export default class TextContainer
     this.homePage();
   }
 
+/*
+  addToolTip(element)
+  {
+    let allElements = document.querySelectorAll(element);
+
+    for(let i = 0; i < allElements.length; i++)
+    {
+      allElements[i].setAttribute('data-tooltip', 'Click off link to go to previous image');
+    }
+
+  }
+*/
+
   homePage()
   {
     // creating elements that will be placed over the particles so pagination can be implemented
@@ -29,13 +42,21 @@ export default class TextContainer
     document.body.appendChild(c2);
     document.body.appendChild(c3);
 
+    //this.addToolTip('div');
+
   }
 
   projectsPage()
   {
+    /*
       let c1 = document.createElement('a');
       let c2 = document.createElement('a');
       let c3 = document.createElement('a');
+    */
+
+      let c1 = document.createElement('div');
+      let c2 = document.createElement('div');
+      let c3 = document.createElement('div');
 
       c1.id = 'ProjectPageTop';
       c2.id = 'ProjectPageMiddle';
@@ -45,13 +66,19 @@ export default class TextContainer
       c2.className = 'textContainers';
       c3.className = 'textContainers';
 
+      document.body.appendChild(c1);
+      document.body.appendChild(c2);
+      document.body.appendChild(c3);
+
+/*
       // attaching links to projects
       c1.href = 'https://aviato26.github.io/coffeeStop/';
       c2.href = 'https://talk-box.herokuapp.com/';
       c3.href = 'https://movie-bin.herokuapp.com/';
-
+*/
+/*
       // checking to see if node elements are already appended to document
-      if(document.querySelectorAll('a').length < 1)
+      if(document.querySelectorAll('div').length < 1)
       {
         // clearing homepage elements from document
         this.clearElements('#HomePageTop');
@@ -68,19 +95,23 @@ export default class TextContainer
       {
         this.clearElements()
       }
+      */
 
   }
 
   contactsPage()
   {
-      let c1 = document.createElement('a');
+      //let c1 = document.createElement('a');
+      let c1 = document.createElement('div');
 
       c1.id = 'ContactPage';
 
       c1.className = 'textContainers';
 
-      c1.href = 'mailto:sdeshler426@aol.com';
-
+      document.body.appendChild(c1);
+/*
+      //c1.href = 'mailto:sdeshler426@aol.com';
+        document.body.appendChild(c1);
       // checking to see if any nodes are already appended
       if(document.querySelectorAll('a').length < 1)
       {
@@ -94,11 +125,12 @@ export default class TextContainer
       {
         this.clearElements()
       }
+*/
   }
 
   updateElements(index)
   {
-    // check what
+    // check what div is clicked on, then filtering each one
     switch(index)
     {
       case 0:
@@ -107,7 +139,7 @@ export default class TextContainer
       break;
 
       case 1:
-        // dont clear project elements or they will not be able to use the a links
+        this.clearElements('.textContainers');
         this.projectsPage();
       break;
 
@@ -116,8 +148,58 @@ export default class TextContainer
       break;
 
       case 3:
+        this.clearElements('.textContainers');
         this.contactsPage();
       break;
+    }
+  }
+
+  redirectToURL(elementId)
+  {
+
+    let coffeeStop = 'https://aviato26.github.io/coffeeStop/';
+    let talkBox = 'https://talk-box.herokuapp.com/';
+    let movieBin = 'https://movie-bin.herokuapp.com/';
+    let email = 'mailto:sdeshler426@aol.com';
+
+    // checking to see what links are clicked, then filtering through each one
+    switch (elementId) {
+      case 'ProjectPageTop':
+
+        // making http request to projects page
+        fetch(coffeeStop, { method: 'GET', redirect: 'follow'})
+          .then(response => {
+            // set window location to response url to redirect to other website
+            window.location.href = response.url;
+          })
+          .catch(err => console.log(err))
+      break;
+
+      case 'ProjectPageMiddle':
+        fetch(talkBox, { method: 'GET', redirect: 'follow'})
+          .then(response => {
+            // set window location to response url to redirect to other website
+            window.location.href = response.url;
+          })
+          .catch(err => console.log(err))
+      break;
+
+      case 'ProjectPageBottom':
+        fetch(movieBin, { method: 'GET', redirect: 'follow'})
+          .then(response => {
+            // set window location to response url to redirect to other website
+            window.location.href = response.url;
+          })
+          .catch(err => console.log(err))
+      break;
+
+      case 'ContactPage':
+        window.location.href = "mailto:mail@example.org";
+      break;
+
+      default:
+      break;
+
     }
   }
 
