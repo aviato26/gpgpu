@@ -7,7 +7,7 @@ import * as THREE from 'three';
 
 import ringModel from '../ring.glb';
 
-export class CreateText
+export class ModelLoader
 {
   constructor()
   {

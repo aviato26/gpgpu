@@ -9,7 +9,7 @@ body, html
 /* setting for default container */
 .textContainers
 {
-  background-color: red;
+  /* background-color: red; */
   width: 30%;
   height: 15%;
   margin: auto;
@@ -18,12 +18,18 @@ body, html
   position: fixed;
   z-index: 30000;
   transform: translate(-50%, -50%);
-  opacity: 0.0;
 }
 
-.textContainers:hover
+/* will add this back on next commit, this is the tooltip for instructions on navigating to previous image
+.textContainers:hover::before
 {
-  cursor: pointer;
+  content: attr(data-tooltip);
+}
+*/
+
+canvas::after
+{
+  content: attr(data-tooltip);
 }
 
 a

@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { GPUComputationRenderer } from 'three/examples/jsm/misc/GPUComputationRenderer.js'
 import Stats from 'three/examples/jsm/libs/stats.module.js';
 import { MouseControls } from './MouseControls.js';
-import { CreateText } from './CreateText.js';
+import { ModelLoader } from './ModelLoader.js';
 import TextContainer from './textContainers.js';
 import vertex from '../shaders/vertex.js';
 import fragment from '../shaders/fragment.js';
@@ -97,7 +97,9 @@ export default class Main
   //this.needResize = this.renderer.domElement.clientWidth !== window.innerWidth || this.renderer.domElement.clientHeight !== window.innerHeight;
 
   document.body.appendChild( this.renderer.domElement );
-  document.body.appendChild( this.stats.dom );
+
+  // adding stats div to page
+  //document.body.appendChild( this.stats.dom );
 
   this.clock = new THREE.Clock();
 
@@ -116,7 +118,7 @@ export default class Main
   this.bSize = 20;
   this.boxGeometry = new THREE.BoxGeometry( this.bSize, this.bSize );
 */
-  this.text = new CreateText();
+  this.model = new ModelLoader();
 
   this.renderer.sortObjects = false;
 
@@ -125,7 +127,7 @@ export default class Main
 
   //this.container.updateElements(this.mouse.currentTexture);
 
-  this.text.loadModel(ringModel)
+  this.model.loadModel(ringModel)
   .then(model => {
     //console.log(model)
     this.scene.add(model);
@@ -261,8 +263,8 @@ export default class Main
     this.dtOldPos.flipY = true;
 
 
-    //this.dtPosition.image.data = this.geometry.attributes.position.array
-    console.log(this.dtPosition.image.data.length, this.particleGeometry.attributes.position.array.length);
+    // log particle count
+    //console.log(this.dtPosition.image.data.length, this.particleGeometry.attributes.position.array.length);
     this.fillPositions(this.dtPosition, this.particleGeometry.attributes.position.array);
     this.fillPositions(this.dtVelocity, this.particleGeometry.attributes.position.array);
     this.fillPositions(this.dtOldPos, this.particleGeometry.attributes.position.array);
@@ -359,7 +361,7 @@ export default class Main
     requestAnimationFrame( this.animate );
 
     // added the stats module to see how fast our simulation is running, so far it is 60fps yay!
-    this.stats.begin();
+    //this.stats.begin();
 
     // checks to see if window size is mobile/tablet or laptop (if the aspect is greater than 1 than device is laptop, under 1 is tablet or mobile)
     this.fov = (this.cameraAspect < 1.0) ? 70 : ((this.cameraAspect > 1.0) && (this.cameraAspect < 1.2)) ? 55 : 40;
@@ -449,7 +451,8 @@ export default class Main
 
     this.renderer.render( this.scene, this.camera);
 
-    this.stats.end();
+    // show fps
+    //this.stats.end();
   }
 
 }

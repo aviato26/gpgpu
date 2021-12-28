@@ -49,6 +49,7 @@ export class MouseControls
 
       this.x = (( event.clientX / window.innerWidth ) * 2 - 1);
       this.y = ((1.0 - event.clientY / window.innerHeight ) * 2 - 1);
+
 /*
       // current element that is clicked on
       this.currentElement = e.target.id;
@@ -96,15 +97,20 @@ export class MouseControls
         //this.textContainer.updateElements(this.currentTexture.currentIndex);
       }
 
+      if(this.textContainer)
+      {
+        this.textContainer.redirectToURL(e.target.id);
+      }
+
       // initialze textContainer for texture switching
       //this.textContainer = new TextContainer();
-/*
+
       // current element that is clicked on
       this.currentElement = e.target.id;
       this.currentTexture.textureIndex(this.currentElement);
       this.textContainer.updateElements(this.currentTexture.currentIndex);
       this.tSwitch = this.currentTexture.currentIndex;
-*/
+
       // creating a little delay to let particles bunch together
 
       setTimeout(() => {
