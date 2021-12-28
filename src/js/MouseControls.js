@@ -32,10 +32,9 @@ export class MouseControls
     document.addEventListener('mousemove', (event) => {
       if(this.pressingDown)
       {
-        this.x = (( event.clientX / window.innerWidth ) * 2 - 1) * 0.2;
-        this.y = ((1.0 - event.clientY / window.innerHeight ) * 2 - 1) * 0.2;
-        //this.y = -this.y;
-        //this.tSwitch = 0.0;
+        // positions for the particles to follow, adding a little damping at the end to make the movement slower
+        this.x = (( event.clientX / window.innerWidth ) * 2 - 1) * 0.3;
+        this.y = ((1.0 - event.clientY / window.innerHeight ) * 2 - 1) * 0.3;
       }
     })
 
@@ -49,6 +48,17 @@ export class MouseControls
 
       this.x = (( event.clientX / window.innerWidth ) * 2 - 1);
       this.y = ((1.0 - event.clientY / window.innerHeight ) * 2 - 1);
+
+      // check to see if div's are created and appended to add page switching feature
+      if(this.textContainer)
+      {
+        // current element that is clicked on
+        this.currentElement = e.target.id;
+        this.currentTexture.textureIndex(this.currentElement);
+        this.textContainer.updateElements(this.currentTexture.currentIndex);
+        this.tSwitch = this.currentTexture.currentIndex;
+        this.textContainer.redirectToURL(e.target.id);
+      }
 
 /*
       // current element that is clicked on
@@ -94,48 +104,27 @@ export class MouseControls
       {
         // after initial click, instantiating textContainer to activate text boxes
         this.textContainer = new TextContainer();
-        //this.textContainer.updateElements(this.currentTexture.currentIndex);
       }
-
+/*
       if(this.textContainer)
       {
         this.textContainer.redirectToURL(e.target.id);
       }
-
-      // initialze textContainer for texture switching
-      //this.textContainer = new TextContainer();
-
-      // current element that is clicked on
-      this.currentElement = e.target.id;
-      this.currentTexture.textureIndex(this.currentElement);
-      this.textContainer.updateElements(this.currentTexture.currentIndex);
-      this.tSwitch = this.currentTexture.currentIndex;
+*/
 
       // creating a little delay to let particles bunch together
-
       setTimeout(() => {
         this.pressingDown = false;
-
-        // current element that is clicked on
-        this.currentElement = e.target.id;
-        this.currentTexture.textureIndex(this.currentElement);
-        this.textContainer.updateElements(this.currentTexture.currentIndex);
-        this.tSwitch = this.currentTexture.currentIndex;
-
-        //this.textContainer.updateElements(this.currentTexture.currentIndex);
-
-        // check increment click event
-        //this.initialClick += 1;
       }, 500)
 
-      //this.tSwitch = 1.0;
+
     })
 
     // gathering all divs that are placed over the text
-    const containers = [...document.getElementsByClassName('textContainers')];
+    //const containers = [...document.getElementsByClassName('textContainers')];
 
     // looping over the divs over text to add click event, this will check which div is clicked to chose which text object (from home page to project to about page ...)
-    containers.map(c => c.addEventListener('click', (e) => console.log(e)))
+    //containers.map(c => c.addEventListener('click', (e) => console.log(e)))
 
   }
 
